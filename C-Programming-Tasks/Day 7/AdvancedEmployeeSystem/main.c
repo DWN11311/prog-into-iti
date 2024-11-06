@@ -379,11 +379,13 @@ void DrawMenuArt()
 void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mainFlag)
 {
     struct Employee newEmp;
-    int editCursor = 0;
-    int editFlag = 0;
+    int secondaryCursor = 0;
+    int secondaryFlag = 0;
     char ch;
+    char searchOptions[4][24] = {" By SSN ", " By Name ", " By Net Salary Range ", " By Age Range "};
     switch(cursor)
     {
+    // Add Employee
     case 0:
         system("CLS");
         newEmp = AddEmployeeScreen();
@@ -395,11 +397,14 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
         }
         else
         {
-            PrintEmployee((*employees)[*sizePtr - 1]);
+            printf("Added Employee \"%s\" Successfully! Press any key to continue.",(*employees)[*sizePtr - 1].name);
             getch();
         }
         break;
+    // Edit Employee
     case 1:
+        secondaryCursor = 0;
+        secondaryFlag = 0;
         system("CLS");
         if(*sizePtr == 0)
         {
@@ -413,11 +418,11 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
             gotoxy(0,0);
             DrawMenuArt();
             gotoxy(37, 1);
-            editCursor = 0;
+            secondaryCursor = 0;
             printf("Edit Employees");
             for(int i = 0; i < *sizePtr; i++)
             {
-                if(editCursor == i)
+                if(secondaryCursor == i)
                     textattr(79);
                 else
                     textattr(15);
@@ -433,16 +438,16 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
                 switch(ch)
                 {
                 case Up:
-                    if(editCursor > 0)
-                        editCursor--;
+                    if(secondaryCursor > 0)
+                        secondaryCursor--;
                     else
-                        editCursor = 5;
+                        secondaryCursor = 5;
                     break;
                 case Down:
-                    if (editCursor < *sizePtr)
-                        editCursor++;
+                    if (secondaryCursor < *sizePtr)
+                        secondaryCursor++;
                     else
-                        editCursor = 0;
+                        secondaryCursor = 0;
                     break;
                 }
                 break;
@@ -450,22 +455,77 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
                 system("CLS");
                 newEmp = AddEmployeeScreen();
                 system("CLS");
-                *employees[editCursor] = newEmp;
+                *employees[secondaryCursor] = newEmp;
                 printf("Updated employee successfully! press any key to continue");
                 getch();
-                editFlag = 1;
+                secondaryFlag = 1;
                 break;
             case ESC:
-                editFlag = 1;
+                secondaryFlag = 1;
                 break;
             }
         }
-        while(editFlag != 1);
+        while(secondaryFlag != 1);
         break;
+    // Display Employees
     case 2:
         system("CLS");
         DisplayEmployees(*employees, sizePtr);
         getch();
+        break;
+    // Search Menu
+    case 3:
+        secondaryCursor = 0;
+        secondaryFlag = 0;
+        system("CLS");
+        gotoxy(0,0);
+        DrawMenuArt();
+        gotoxy(34, 1);
+        printf("Choose Search Method");
+
+        do{
+            for(int i = 0; i < 4; i++)
+            {
+                if(secondaryCursor == i)
+                    textattr(79);
+                else
+                    textattr(15);
+                gotoxy(34, 5+i*2);
+                printf("%s", searchOptions[i]);
+                textattr(15);
+            }
+
+            ch = getch();
+
+            switch(ch)
+            {
+            case EXTENDED:
+                ch = getch();
+                switch(ch)
+                {
+                case Up:
+                    if(secondaryCursor > 0)
+                        secondaryCursor--;
+                    else
+                        secondaryCursor = 3;
+                    break;
+                case Down:
+                    if (secondaryCursor < 3)
+                        secondaryCursor++;
+                    else
+                        secondaryCursor = 0;
+                    break;
+                }
+                break;
+            case Enter:
+                break;
+            case ESC:
+                secondaryFlag = 1;
+                break;
+            }
+        }while(secondaryFlag != 1);
+        break;
+    case 4:
         break;
     case 5:
         *mainFlag = 1;
@@ -479,7 +539,7 @@ int main()
     SetConsoleOutputCP(CP_UTF8);
     setlocale(LC_ALL, "en_US.UTF-8");
 
-    char menu[6][30] = {" Add Employee ", " Edit Employee ", " Get All Employees ", " Get Single Employee ", " Delete Employee ", " Exit "};
+    char menu[6][30] = {" Add Employee ", " Edit Employee ", " Get All Employees ", " Search Employees ", " Delete Employee ", " Exit "};
     int cursor = 0;
     int flag = 0;
     int *flagPtr;
