@@ -321,6 +321,28 @@ char** MultiLineEditor(int rows, int cols, int colPosition, int rowPosition)
     return textPtr;
 }
 
+int validateStringToInt(char *charPtr, int min, int max)
+{
+    char *endPtr;
+    int num;
+    if(charPtr[0] == '\0')
+        return 0;
+    num = (int)strtol(charPtr, &endPtr, 10);
+    if (endPtr == charPtr)
+    {
+        return 0;
+    }
+    else if (*endPtr != '\0')
+    {
+        return 0;
+    }
+    else if(num < min || num > max)
+    {
+        return 0;
+    }
+    return 1;
+}
+
 struct Employee AddEmployeeScreen()
 {
     struct Employee emp;
@@ -329,40 +351,94 @@ struct Employee AddEmployeeScreen()
     gotoxy(0,1);
     printf("_____________________________________________________________________________________");
     gotoxy(2, 3);
-    printf("SSN");
+    printf("(1-999999)   SSN");
     gotoxy(2, 4);
-    printf("Name");
+    printf("(1-15)       Name");
     gotoxy(2, 5);
-    printf("Age");
+    printf("(18-100)     Age");
     gotoxy(2, 6);
-    printf("Salary");
+    printf("(3000-90000) Salary");
     gotoxy(2, 7);
-    printf("Deduction");
+    printf("(100-10000)  Deduction");
     gotoxy(2, 8);
-    printf("Commission");
+    printf("(100-10000)  Commission");
 
     for(int i = 2; i < 10; i++)
     {
-        gotoxy(13,i);
+        gotoxy(26,i);
         printf("|");
     }
 
     int valid = 1;
-    char** textDetails;
+    char** textDetails = NULL;
     do{
-        valid = 1;
-        textDetails = MultiLineEditor(6, 24, 3, 15);
-        for(int i = 0; i < 6; i++)
+        // Release old 2D char array from memory
+        if (textDetails != NULL)
         {
-            if(i == 1) continue;
-            for(int j = 0; j < strlen(textDetails[i]); j++)
+            for (int i = 0; i < 6; i++)
             {
-                if(textDetails[i][j] < 48 || textDetails[i][j] > 57)
-                {
-                    valid = 0;
-                }
+                free(textDetails[i]);
             }
+            free(textDetails);
         }
+        valid = 1;
+        textDetails = MultiLineEditor(6, 24, 3, 28);
+
+        // ssn validation
+        if(validateStringToInt(textDetails[0], 1, 1000000) == 0)
+        {
+            valid = 0;
+            gotoxy(1, 3);
+            textattr(12);
+            printf("*");
+            textattr(15);
+        } else { gotoxy(1, 3); printf(" "); }
+        // name validation
+        if(strlen(textDetails[1]) > 15 || strlen(textDetails[1]) == 0)
+        {
+            valid = 0;
+            gotoxy(1, 4);
+            textattr(12);
+            printf("*");
+            textattr(15);
+        } else { gotoxy(1, 4); printf(" "); }
+        // age validation
+        if(validateStringToInt(textDetails[2], 18, 100) == 0)
+        {
+            valid = 0;
+            gotoxy(1, 5);
+            textattr(12);
+            printf("*");
+            textattr(15);
+        } else { gotoxy(1, 5); printf(" "); }
+        // salary validation
+        if(validateStringToInt(textDetails[3], 3000, 90000) == 0)
+        {
+            valid = 0;
+            gotoxy(1, 6);
+            textattr(12);
+            printf("*");
+            textattr(15);
+        } else { gotoxy(1, 6); printf(" "); }
+        // deduction validation
+        if(validateStringToInt(textDetails[4], 100, 10000) == 0)
+        {
+            valid = 0;
+            gotoxy(1, 7);
+            textattr(12);
+            printf("*");
+            textattr(15);
+        } else { gotoxy(1, 7); printf(" "); }
+        // commission validation
+        if(validateStringToInt(textDetails[5], 100, 10000) == 0)
+        {
+            valid = 0;
+            gotoxy(1, 8);
+            textattr(12);
+            printf("*");
+            textattr(15);
+        } else { gotoxy(1, 8); printf(" "); }
+
         if(valid != 1){
             gotoxy(40, 0);
             printf("Please enter valid parameters");
@@ -375,6 +451,12 @@ struct Employee AddEmployeeScreen()
     emp.salary = atoi(textDetails[3]);
     emp.deduction = atoi(textDetails[4]);
     emp.commission = atoi(textDetails[5]);
+
+    for (int i = 0; i < 6; i++)
+    {
+        free(textDetails[i]);
+    }
+    free(textDetails);
 
     return emp;
 }
