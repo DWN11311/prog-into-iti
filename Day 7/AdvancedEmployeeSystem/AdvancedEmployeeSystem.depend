@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1730785383 source:d:\iti ui 45\intro to programming c\test\advancedemployeesystem\main.c
+	<stdio.h>
+	<stdlib.h>
+	<wchar.h>
+	<locale.h>
+	<windows.h>
+
+1730814689 source:d:\iti ui 45\intro to programming c\day 5\advancedemployeesystem\main.c
+	<stdio.h>
+	<stdlib.h>
+	<wchar.h>
+	<locale.h>
+	<windows.h>
+

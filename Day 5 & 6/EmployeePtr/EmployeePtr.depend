@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1730636277 source:d:\iti ui 45\intro to programming c\day 4\employeeptr\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+

@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1730723034 source:d:\iti ui 45\intro to programming c\test\employeelineeditor\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<windows.h>
+
+1730723645 source:d:\iti ui 45\intro to programming c\day 5\employeelineeditor\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<windows.h>
+

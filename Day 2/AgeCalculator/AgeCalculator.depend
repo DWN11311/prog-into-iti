@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1730120793 source:d:\iti ui 45\intro to programming c\test\agecalculator\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+
+1730123164 source:d:\iti ui 45\intro to programming c\day 2\lab\agecalculator\main.c
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+

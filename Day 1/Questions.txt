@@ -1,0 +1,4 @@
+Q1: Hello World Program
+Q2: Read a char and print its ASCII value
+Q3: Print the hexadecimal value of an integer
+Optional Q4: Print the address of any variable

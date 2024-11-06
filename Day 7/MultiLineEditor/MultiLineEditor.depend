@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1730727230 source:d:\iti ui 45\intro to programming c\test\multilineeditor\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<windows.h>
+
+1730806715 source:d:\iti ui 45\intro to programming c\day 5\multilineeditor\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<windows.h>
+
