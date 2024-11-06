@@ -57,6 +57,34 @@ int AddEmployee(struct Employee **empsPtr, int *sizePtr, struct Employee newEmp)
     return flag;
 }
 
+int RemoveEmployee(struct Employee **empsPtr, int *sizePtr, int index)
+{
+    int flag = 1;
+    int newEmpsiterator = 0;
+
+    struct Employee *newEmpsPtr = malloc(((*sizePtr)-1) * sizeof(struct Employee));
+    if(newEmpsPtr == NULL)
+    {
+        flag = 0;
+        return flag;
+    }
+
+    for(int i = 0; i < *sizePtr; i++)
+    {
+        if(i != index)
+        {
+            newEmpsPtr[newEmpsiterator] = (*empsPtr)[i];
+            newEmpsiterator++;
+        }
+    }
+
+    free(*empsPtr);
+    *empsPtr = newEmpsPtr;
+    (*sizePtr)--;
+
+    return 1;
+}
+
 void DisplayEmployees(struct Employee *employees, int *size)
 {
     if (employees == NULL || *size == 0)
@@ -484,7 +512,6 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
             gotoxy(0,0);
             DrawMenuArt();
             gotoxy(37, 1);
-            secondaryCursor = 0;
             printf("Edit Employees");
             for(int i = 0; i < *sizePtr; i++)
             {
@@ -507,10 +534,10 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
                     if(secondaryCursor > 0)
                         secondaryCursor--;
                     else
-                        secondaryCursor = 5;
+                        secondaryCursor = *sizePtr-1;
                     break;
                 case Down:
-                    if (secondaryCursor < *sizePtr)
+                    if (secondaryCursor < *sizePtr-1)
                         secondaryCursor++;
                     else
                         secondaryCursor = 0;
@@ -521,7 +548,7 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
                 system("CLS");
                 newEmp = AddEmployeeScreen();
                 system("CLS");
-                *employees[secondaryCursor] = newEmp;
+                (*employees)[secondaryCursor] = newEmp;
                 printf("Updated employee successfully! press any key to continue");
                 getch();
                 secondaryFlag = 1;
@@ -543,16 +570,13 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
     case 3:
         secondaryCursor = 0;
         secondaryFlag = 0;
-        system("CLS");
-        gotoxy(0,0);
-        DrawMenuArt();
-        gotoxy(34, 1);
-        printf("Choose Search Method");
-
         do{
             system("CLS");
             gotoxy(0, 0);
             DrawMenuArt();
+            gotoxy(34, 1);
+            printf("Choose Search Method");
+
             for(int i = 0; i < 5; i++)
             {
                 if(secondaryCursor == i)
@@ -609,6 +633,7 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
                     system("CLS");
                     gotoxy(0, 0);
                     printf("Enter employee name: ");
+                    _flushall();
                     gets(stringSearchparam);
                     SearchEmployeeByName(*employees, *sizePtr, &searchResult, &searchResultSize, stringSearchparam);
                     if(searchResultSize > 0) {
@@ -671,7 +696,83 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
             }
         }while(secondaryFlag != 1);
         break;
+    // Delete employee
     case 4:
+        system("CLS");
+        if(*sizePtr == 0)
+        {
+            printf("No Employees to delete, press any key to continue");
+            getch();
+            break;
+        }
+        secondaryCursor = 0;
+        do
+        {
+            system("CLS");
+            gotoxy(0,0);
+            DrawMenuArt();
+            gotoxy(37, 1);
+            printf("Delete Employee");
+            for(int i = 0; i < *sizePtr; i++)
+            {
+                if(secondaryCursor == i)
+                    textattr(79);
+                else
+                    textattr(15);
+                gotoxy(34, 5+i*2);
+                printf("%s", (*employees)[i].name);
+                textattr(15);
+            }
+            ch = getch();
+            switch(ch)
+            {
+            case EXTENDED:
+                ch = getch();
+                switch(ch)
+                {
+                case Up:
+                    if(secondaryCursor > 0)
+                        secondaryCursor--;
+                    else
+                        secondaryCursor = *sizePtr-1;
+                    break;
+                case Down:
+                    if (secondaryCursor < *sizePtr-1)
+                        secondaryCursor++;
+                    else
+                        secondaryCursor = 0;
+                    break;
+                }
+                break;
+            case Enter:
+                system("CLS");
+                printf("You are about to delete this employee:\n");
+                printf("%i\n", secondaryCursor);
+                PrintEmployee((*employees)[secondaryCursor]);
+                printf("\nAre you sure you want to proceed? (y/n): ");
+                _flushall();
+                scanf("%s",stringSearchparam);
+                if(stringSearchparam[0] == 'y' || stringSearchparam == 'Y')
+                {
+                    system("CLS");
+                    if(RemoveEmployee(employees, sizePtr, secondaryCursor) == 1)
+                    {
+                        printf("Employee deletion was successful, Press any key to continue.");
+                    }
+                    else
+                    {
+                        printf("Employee deletion failed, Press any key to continue.");
+                    }
+                    secondaryFlag = 1;
+                    getch();
+                }
+                break;
+            case ESC:
+                secondaryFlag = 1;
+                break;
+            }
+        }
+        while(secondaryFlag != 1);
         break;
     case 5:
         *mainFlag = 1;
