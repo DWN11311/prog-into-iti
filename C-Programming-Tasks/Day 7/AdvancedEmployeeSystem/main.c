@@ -376,13 +376,79 @@ void DrawMenuArt()
     textattr(7);
 }
 
+// NOTE: Search functions edit a received array of employees and a size int that match the criteria
+void SearchEmployeeBySSN(struct Employee *sourceEmployees, int size, struct Employee **resultEmployees, int *resultSize, int _ssn){
+    *resultSize = 0;
+    *resultEmployees = malloc(sizeof(struct Employee) * size);
+
+    for(int i = 0; i < size; i++)
+    {
+        if(sourceEmployees[i].ssn == _ssn)
+        {
+            (*resultEmployees)[*resultSize] = sourceEmployees[i];
+            (*resultSize)++;
+        }
+    }
+};
+
+void SearchEmployeeByName(struct Employee *sourceEmployees, int size, struct Employee **resultEmployees, int *resultSize, char *_name){
+    *resultSize = 0;
+    *resultEmployees = malloc(sizeof(struct Employee) * size);
+
+    for(int i = 0; i < size; i++)
+    {
+        if(_strcmpi(sourceEmployees[i].name, _name) == 0)
+        {
+            (*resultEmployees)[*resultSize] = sourceEmployees[i];
+            (*resultSize)++;
+        }
+    }
+};
+
+void SearchEmployeeByNetSalary(struct Employee *sourceEmployees, int size, struct Employee **resultEmployees, int *resultSize, int _minSalary, int _maxSalary){
+    *resultSize = 0;
+    *resultEmployees = malloc(sizeof(struct Employee) * size);
+
+    for(int i = 0; i < size; i++)
+    {
+        int netSalary = (sourceEmployees[i].salary + sourceEmployees[i].commission) - sourceEmployees[i].deduction;
+        if(netSalary >= _minSalary && netSalary <= _maxSalary)
+        {
+            (*resultEmployees)[*resultSize] = sourceEmployees[i];
+            (*resultSize)++;
+        }
+    }
+};
+
+void SearchEmployeeByAge(struct Employee *sourceEmployees, int size, struct Employee **resultEmployees, int *resultSize, int _minAge, int _maxAge){
+    *resultSize = 0;
+    *resultEmployees = malloc(sizeof(struct Employee) * size);
+
+    for(int i = 0; i < size; i++)
+    {
+        if(sourceEmployees[i].age >= _minAge && sourceEmployees[i].age <= _maxAge)
+        {
+            (*resultEmployees)[*resultSize] = sourceEmployees[i];
+            (*resultSize)++;
+        }
+    }
+};
+
 void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mainFlag)
 {
     struct Employee newEmp;
     int secondaryCursor = 0;
     int secondaryFlag = 0;
     char ch;
-    char searchOptions[4][24] = {" By SSN ", " By Name ", " By Net Salary Range ", " By Age Range "};
+    char searchOptions[5][24] = {" By SSN ", " By Name ", " By Net Salary Range ", " By Age Range ", " Return "};
+
+    // Variables to store search results and search parameters
+    struct Employee *searchResult = NULL;
+    int searchResultSize = 0;
+    int minSearchParam;
+    int maxSearchParam;
+    char stringSearchparam[32];
+
     switch(cursor)
     {
     // Add Employee
@@ -484,7 +550,10 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
         printf("Choose Search Method");
 
         do{
-            for(int i = 0; i < 4; i++)
+            system("CLS");
+            gotoxy(0, 0);
+            DrawMenuArt();
+            for(int i = 0; i < 5; i++)
             {
                 if(secondaryCursor == i)
                     textattr(79);
@@ -507,10 +576,10 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
                     if(secondaryCursor > 0)
                         secondaryCursor--;
                     else
-                        secondaryCursor = 3;
+                        secondaryCursor = 4;
                     break;
                 case Down:
-                    if (secondaryCursor < 3)
+                    if (secondaryCursor < 4)
                         secondaryCursor++;
                     else
                         secondaryCursor = 0;
@@ -518,6 +587,83 @@ void EnterAction(int cursor, int *sizePtr, struct Employee **employees, int *mai
                 }
                 break;
             case Enter:
+                switch(secondaryCursor){
+                case 0:
+                    system("CLS");
+                    gotoxy(0, 0);
+                    printf("Enter employee SSN: ");
+                    scanf("%i", &minSearchParam);
+                    SearchEmployeeBySSN(*employees, *sizePtr, &searchResult, &searchResultSize, minSearchParam);
+                    if(searchResultSize > 0) {
+                        system("CLS");
+                        DisplayEmployees(searchResult, &searchResultSize);
+                    }
+                    else {
+                        system("CLS");
+                        printf("No matches found. Press any key to continue");
+                    }
+                    free(searchResult);
+                    getch();
+                    break;
+                case 1:
+                    system("CLS");
+                    gotoxy(0, 0);
+                    printf("Enter employee name: ");
+                    gets(stringSearchparam);
+                    SearchEmployeeByName(*employees, *sizePtr, &searchResult, &searchResultSize, stringSearchparam);
+                    if(searchResultSize > 0) {
+                        system("CLS");
+                        DisplayEmployees(searchResult, &searchResultSize);
+                    }
+                    else {
+                        system("CLS");
+                        printf("No matches found. Press any key to continue");
+                    }
+                    free(searchResult);
+                    getch();
+                    break;
+                case 2:
+                    system("CLS");
+                    gotoxy(0, 0);
+                    printf("Enter employee minimum net salary: ");
+                    scanf("%i", &minSearchParam);
+                    printf("Enter employee maximum net salary: ");
+                    scanf("%i", &maxSearchParam);
+                    SearchEmployeeByNetSalary(*employees, *sizePtr, &searchResult, &searchResultSize, minSearchParam, maxSearchParam);
+                    if(searchResultSize > 0) {
+                        system("CLS");
+                        DisplayEmployees(searchResult, &searchResultSize);
+                    }
+                    else {
+                        system("CLS");
+                        printf("No matches found. Press any key to continue");
+                    }
+                    free(searchResult);
+                    getch();
+                    break;
+                case 3:
+                    system("CLS");
+                    gotoxy(0, 0);
+                    printf("Enter employee minimum age: ");
+                    scanf("%i", &minSearchParam);
+                    printf("Enter employee maximum age: ");
+                    scanf("%i", &maxSearchParam);
+                    SearchEmployeeByAge(*employees, *sizePtr, &searchResult, &searchResultSize, minSearchParam, maxSearchParam);
+                    if(searchResultSize > 0) {
+                        system("CLS");
+                        DisplayEmployees(searchResult, &searchResultSize);
+                    }
+                    else {
+                        system("CLS");
+                        printf("No matches found. Press any key to continue");
+                    }
+                    free(searchResult);
+                    getch();
+                    break;
+                case 4:
+                    secondaryFlag = 1;
+                    break;
+                }
                 break;
             case ESC:
                 secondaryFlag = 1;
